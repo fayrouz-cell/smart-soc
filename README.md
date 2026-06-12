@@ -41,32 +41,16 @@ Ce projet implémente un IDS (Intrusion Detection System) avec les fonctionnalit
 ![Architecture du Smart SOC](architecture.png)
 
 
-Le flux de données :
-┌─────────────────┐
-│ Packet Sniffer │
-│ (Live/Replay) │
-└────────┬────────┘
-▼
-┌─────────────────┐
-│ Packet Parser │
-│ (Standardize) │
-└────────┬────────┘
-│
-┌────┼────┬────────────┐
-▼ ▼ ▼ ▼
-┌───────┐ ┌───────┐ ┌───────────┐
-│Signature│ │Anomaly│ │ Logger │
-│ Engine │ │ Engine│ │(JSON logs)│
-└───┬───┘ └───┬───┘ └─────┬─────┘
-└────┼────┘ │
-▼ │
-┌─────────────────┐ │
-│ Alert Manager │◄──────┘
-│ (Display) │
-└─────────────────┘
+Ce projet implémente un IDS (Intrusion Detection System) avec les fonctionnalités suivantes :
 
-text
+- **Capture de paquets** : Mode live (capture en temps réel) et replay (lecture de fichiers PCAP)
+- **Détection par signatures** : Port scan, SYN flood, ping sweep, ports suspects
+- **Détection d'anomalies** : Statistiques et optionnellement Machine Learning (IsolationForest)
+- **Journalisation structurée** : Logs JSON avec rotation automatique
+- **Alertes en temps réel** : Affichage coloré avec Rich/Colorama
+- **Tests complets** : Suite de tests pytest
 
+  
 ## 📦 Installation
 
 ### Prérequis
@@ -86,6 +70,7 @@ source venv/bin/activate  # Sur Windows: venv\Scripts\activate
 
 # Installer les dépendances
 pip install -r requirements.txt
+
 Installation avec Docker
 bash
 docker-compose up --build
