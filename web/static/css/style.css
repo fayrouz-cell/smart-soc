@@ -1,0 +1,207 @@
+/* Custom styles for IDS Web Interface */
+
+:root {
+    --primary-color: #0d6efd;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+}
+
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-fluid {
+    flex: 1;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: box-shadow 0.3s;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.alert-card {
+    margin-bottom: 0.5rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+}
+
+.alert-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.severity-critical {
+    border-left: 4px solid var(--danger-color);
+    background-color: #fff5f5;
+}
+
+.severity-warning {
+    border-left: 4px solid var(--warning-color);
+    background-color: #fffbf0;
+}
+
+.severity-info {
+    border-left: 4px solid var(--info-color);
+    background-color: #f0f9ff;
+}
+
+#packet-stream {
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+}
+
+.packet-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #3e3e3e;
+    transition: background-color 0.2s;
+}
+
+.packet-item:hover {
+    background-color: #2d2d2d;
+}
+
+.packet-item:last-child {
+    border-bottom: none;
+}
+
+.packet-protocol {
+    color: #4ec9b0;
+    font-weight: bold;
+}
+
+.packet-src {
+    color: #569cd6;
+}
+
+.packet-dst {
+    color: #ce9178;
+}
+
+.stat-card {
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.filter-section {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #dee2e6;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.badge {
+    font-weight: 500;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .filter-section {
+        padding: 1rem;
+    }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Animation for new alerts */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.alert-new {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Status badge */
+#ids-status {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+#ids-status.running {
+    background-color: var(--success-color) !important;
+}
+
+#ids-status.stopped {
+    background-color: #6c757d !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

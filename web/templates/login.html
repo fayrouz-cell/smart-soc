@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion - IDS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-in">
+    <div class="col-md-6 col-lg-5">
+        <div class="login-terminal">
+            <div class="text-center mb-4">
+                <h2 class="text-neon-cyan mb-3" style="font-family: 'Orbitron', sans-serif; font-weight: 700; letter-spacing: 3px; text-shadow: 0 0 20px var(--neon-cyan);">
+                    <i class="bi bi-terminal"></i> ACCESS TERMINAL
+                </h2>
+                <p class="text-muted" style="font-family: 'Fira Code', monospace; font-size: 0.9rem;" id="terminal-text">
+                    > INITIALIZING_AUTHENTICATION_SYSTEM...
+                </p>
+            </div>
+            <form method="POST" action="{{ url_for('login') }}" id="login-form">
+                <div class="mb-4">
+                    <label for="username" class="form-label text-neon-cyan" style="font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                        <i class="bi bi-person"></i> USERNAME
+                    </label>
+                    <input type="text" class="form-control form-control-lg" id="username" name="username" required autofocus 
+                           placeholder="> Enter username" 
+                           style="font-family: 'Fira Code', monospace; background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label text-neon-cyan" style="font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                        <i class="bi bi-key"></i> PASSWORD
+                    </label>
+                    <input type="password" class="form-control form-control-lg" id="password" name="password" required 
+                           placeholder="> Enter password" 
+                           style="font-family: 'Fira Code', monospace; background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg" style="font-weight: 700; letter-spacing: 2px; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet)); border: none;">
+                        <i class="bi bi-box-arrow-in-right"></i> AUTHENTICATE
+                    </button>
+                </div>
+            </form>
+            <div class="mt-4 pt-4 border-top" style="border-color: rgba(0, 245, 255, 0.3) !important;">
+                <p class="text-center text-muted mb-2" style="font-family: 'Fira Code', monospace; font-size: 0.85rem;">
+                    <strong class="text-neon-violet">DEMO_ACCOUNTS:</strong>
+                </p>
+                <div class="text-center" style="font-family: 'Fira Code', monospace; font-size: 0.8rem;">
+                    <p class="mb-1">
+                        <span class="text-neon-cyan">Admin:</span> 
+                        <code style="color: var(--neon-success);">admin</code> 
+                        <span class="text-muted">/</span> 
+                        <code style="color: var(--neon-success);">admin123</code>
+                    </p>
+                    <p class="mb-0">
+                        <span class="text-neon-cyan">User:</span> 
+                        <code style="color: var(--neon-success);">user</code> 
+                        <span class="text-muted">/</span> 
+                        <code style="color: var(--neon-success);">user123</code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Terminal typing effect
+document.addEventListener('DOMContentLoaded', function() {
+    const terminalText = document.getElementById('terminal-text');
+    if (terminalText) {
+        const originalText = terminalText.textContent;
+        terminalText.textContent = '';
+        let i = 0;
+        const typeInterval = setInterval(() => {
+            if (i < originalText.length) {
+                terminalText.textContent += originalText.charAt(i);
+                i++;
+            } else {
+                clearInterval(typeInterval);
+                const cursor = document.createElement('span');
+                cursor.textContent = '_';
+                cursor.style.animation = 'blink 1s infinite';
+                cursor.style.color = 'var(--neon-cyan)';
+                terminalText.appendChild(cursor);
+            }
+        }, 50);
+    }
+});
+</script>
+{% endblock %}

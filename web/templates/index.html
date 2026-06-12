@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - IDS{% endblock %}
+
+{% block content %}
+<div class="row fade-in">
+    <div class="col-lg-12">
+        <div class="jumbotron mb-4">
+            <h1 class="display-4 text-neon-cyan">
+                <i class="bi bi-shield-check"></i> 
+                <span style="font-family: 'Orbitron', sans-serif; font-weight: 900;">SYSTÈME DE DÉTECTION D'INTRUSIONS RÉSEAU</span>
+            </h1>
+            <p class="lead" style="color: var(--text-primary); font-size: 1.3rem; margin-top: 1.5rem;">
+                Surveillez et protégez votre réseau contre les intrusions et les attaques malveillantes en temps réel.
+            </p>
+            <hr class="my-4" style="border-color: rgba(0, 245, 255, 0.3);">
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">
+                Ce système IDS analyse le trafic réseau pour détecter les activités suspectes, les attaques connues et les anomalies comportementales.
+            </p>
+            {% if not session.user %}
+            <a class="btn btn-primary btn-lg mt-4" href="{{ url_for('login') }}" role="button">
+                <i class="bi bi-box-arrow-in-right"></i> <span style="letter-spacing: 2px;">SE CONNECTER</span>
+            </a>
+            {% else %}
+            <a class="btn btn-primary btn-lg mt-4" href="{{ url_for('dashboard') }}" role="button">
+                <i class="bi bi-speedometer2"></i> <span style="letter-spacing: 2px;">ACCÉDER AU TABLEAU DE BORD</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-activity text-neon-cyan" style="font-size: 4rem; text-shadow: 0 0 20px var(--neon-cyan);"></i>
+                </div>
+                <h5 class="card-title text-center text-neon-cyan" style="font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                    Analyse en Temps Réel
+                </h5>
+                <p class="card-text text-center" style="color: var(--text-secondary); margin-top: 1rem;">
+                    Surveillez le trafic réseau en temps réel avec des alertes instantanées sur les activités suspectes détectées.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-shield-exclamation text-neon-danger" style="font-size: 4rem; text-shadow: 0 0 20px var(--neon-danger);"></i>
+                </div>
+                <h5 class="card-title text-center text-neon-danger" style="font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                    Détection par Signatures
+                </h5>
+                <p class="card-text text-center" style="color: var(--text-secondary); margin-top: 1rem;">
+                    Détecte automatiquement les attaques connues : port scan, SYN flood, ping sweep, et accès aux ports suspects.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <i class="bi bi-graph-up-arrow text-neon-violet" style="font-size: 4rem; text-shadow: 0 0 20px var(--neon-violet);"></i>
+                </div>
+                <h5 class="card-title text-center text-neon-violet" style="font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                    Détection d'Anomalies
+                </h5>
+                <p class="card-text text-center" style="color: var(--text-secondary); margin-top: 1rem;">
+                    Utilise des algorithmes statistiques et de machine learning pour identifier les comportements anormaux.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-cyan">
+                    <i class="bi bi-info-circle"></i> 
+                    <span style="letter-spacing: 1px;">FONCTIONNALITÉS PRINCIPALES</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-neon-success" style="margin-right: 0.5rem;"></i>
+                        <span style="color: var(--text-primary);">Capture de paquets en mode live ou replay</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-neon-success" style="margin-right: 0.5rem;"></i>
+                        <span style="color: var(--text-primary);">Détection de port scan et SYN flood</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-neon-success" style="margin-right: 0.5rem;"></i>
+                        <span style="color: var(--text-primary);">Détection de ping sweep</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-neon-success" style="margin-right: 0.5rem;"></i>
+                        <span style="color: var(--text-primary);">Surveillance des ports suspects</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-neon-success" style="margin-right: 0.5rem;"></i>
+                        <span style="color: var(--text-primary);">Journalisation structurée JSON</span>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-neon-success" style="margin-right: 0.5rem;"></i>
+                        <span style="color: var(--text-primary);">Alertes en temps réel</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-warning">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    <span style="letter-spacing: 1px;">SÉCURITÉ</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <p style="color: var(--text-primary);">
+                    <strong class="text-neon-danger">IMPORTANT :</strong> 
+                    <span style="color: var(--text-secondary);">
+                        Ce système nécessite des privilèges administrateur pour la capture live. 
+                        Utilisez uniquement sur des réseaux autorisés.
+                    </span>
+                </p>
+                <p class="mb-0" style="color: var(--text-secondary);">
+                    Le mode replay est recommandé pour les tests et analyses sans nécessiter de privilèges élevés.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

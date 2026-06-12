@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration des alertes - IDS{% endblock %}
+
+{% block content %}
+<div class="row mb-4 fade-in">
+    <div class="col-12">
+        <h2 class="text-neon-cyan" style="font-family: 'Orbitron', sans-serif; font-weight: 700; letter-spacing: 2px;">
+            <i class="bi bi-bell"></i> CONFIGURATION DES ALERTES
+        </h2>
+        <hr style="border-color: rgba(0, 245, 255, 0.3); margin-top: 1rem;">
+        {% if session.role != 'admin' %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> 
+            <strong>Accès restreint</strong> - Seuls les administrateurs peuvent modifier la configuration.
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if session.role == 'admin' %}
+<!-- Signature Detection Settings -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-cyan" style="letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="bi bi-shield-exclamation"></i> DÉTECTION PAR SIGNATURES
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="signatures-form">
+                    <!-- Port Scan -->
+                    <div class="mb-4">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="portscan-enabled" checked>
+                            <label class="form-check-label" for="portscan-enabled">
+                                <strong>Détection de port scan</strong>
+                            </label>
+                        </div>
+                        <div class="row ms-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Seuil de ports (uniques)</label>
+                                <input type="number" class="form-control" id="portscan-threshold" value="20" min="1" 
+                                       style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fenêtre temporelle (secondes)</label>
+                                <input type="number" class="form-control" id="portscan-window" value="10" min="1" 
+                                       style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: rgba(0, 245, 255, 0.2);">
+
+                    <!-- SYN Flood -->
+                    <div class="mb-4">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="synflood-enabled" checked>
+                            <label class="form-check-label" for="synflood-enabled">
+                                <strong>Détection de SYN flood</strong>
+                            </label>
+                        </div>
+                        <div class="row ms-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Seuil de paquets SYN</label>
+                                <input type="number" class="form-control" id="synflood-threshold" value="200" min="1" 
+                                       style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fenêtre temporelle (secondes)</label>
+                                <input type="number" class="form-control" id="synflood-window" value="10" min="1" 
+                                       style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: rgba(0, 245, 255, 0.2);">
+
+                    <!-- Ping Sweep -->
+                    <div class="mb-4">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="pingsweep-enabled" checked>
+                            <label class="form-check-label" for="pingsweep-enabled">
+                                <strong>Détection de ping sweep</strong>
+                            </label>
+                        </div>
+                        <div class="row ms-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Seuil d'hôtes</label>
+                                <input type="number" class="form-control" id="pingsweep-threshold" value="50" min="1" 
+                                       style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fenêtre temporelle (secondes)</label>
+                                <input type="number" class="form-control" id="pingsweep-window" value="30" min="1" 
+                                       style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border-color: rgba(0, 245, 255, 0.2);">
+
+                    <!-- Suspicious Ports -->
+                    <div class="mb-4">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="suspicious-ports-enabled" checked>
+                            <label class="form-check-label" for="suspicious-ports-enabled">
+                                <strong>Surveillance des ports suspects</strong>
+                            </label>
+                        </div>
+                        <div class="ms-4">
+                            <label class="form-label">Ports à surveiller (séparés par des virgules)</label>
+                            <input type="text" class="form-control" id="suspicious-ports" value="21,22,23,3389,4444,6667" 
+                                   placeholder="21,22,23,3389" 
+                                   style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); font-family: 'Fira Code', monospace; color: var(--text-primary);">
+                            <small class="form-text text-muted">Liste des ports suspects séparés par des virgules</small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Enregistrer la configuration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Anomaly Detection Settings -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-warning" style="letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="bi bi-graph-up-arrow"></i> DÉTECTION D'ANOMALIES
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="anomaly-form">
+                    <div class="mb-3">
+                        <label class="form-label">Seuil de taux de paquets (paquets/min par source)</label>
+                        <input type="number" class="form-control" id="anomaly-rate-threshold" value="3000" min="1" 
+                               style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                        <small class="form-text text-muted">Taux au-delà duquel une alerte est générée</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Seuil de taille de payload (octets)</label>
+                        <input type="number" class="form-control" id="anomaly-payload-threshold" value="10000" min="1" 
+                               style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                        <small class="form-text text-muted">Taille moyenne de payload au-delà de laquelle une alerte est générée</small>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="anomaly-ml-enabled">
+                        <label class="form-check-label" for="anomaly-ml-enabled">
+                            <strong>Activer la détection par Machine Learning</strong>
+                        </label>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="bi bi-save"></i> Enregistrer la configuration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-lock text-warning" style="font-size: 4rem;"></i>
+                <p class="text-muted mt-3">Vous n'avez pas les permissions pour modifier la configuration.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/alerts.js') }}"></script>
+{% endblock %}

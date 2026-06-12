@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  ids:
+    build: .
+    container_name: ids_system
+    volumes:
+      - ./data/logs:/app/data/logs
+      - ./data/pcap_samples:/app/data/pcap_samples
+      - ./data/datasets:/app/data/datasets
+      - ./config.yaml:/app/config.yaml:ro
+    environment:
+      - IDS_MODE=replay
+    command: python main.py --start --mode replay --pcap data/pcap_samples/sample_traffic.pcap
+    restart: unless-stopped
+
+

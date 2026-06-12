@@ -1,0 +1,438 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord - IDS{% endblock %}
+
+{% block content %}
+<!-- Main Dashboard Container -->
+<div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="dashboard-title">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="text-neon-cyan">TABLEAU DE BORD</span>
+                    <span class="text-neon-violet">IDS</span>
+                </h1>
+                <p class="dashboard-subtitle text-muted">
+                    Surveillance en temps réel • Détection d'intrusions réseau
+                </p>
+            </div>
+            <div class="status-indicator" id="system-status">
+                <div class="status-dot" id="status-dot"></div>
+                <span class="status-text" id="status-text">Arrêté</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Panel (Admin Only) -->
+    {% if session.role == 'admin' %}
+    <div class="control-panel card fade-in mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-gear-fill"></i>
+                <span class="text-neon-cyan">PANNEAU DE CONTRÔLE</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <!-- Mode Selection -->
+                <div class="col-md-3">
+                    <label class="form-label">
+                        <i class="bi bi-toggle-on"></i> Mode de capture
+                    </label>
+                    <select class="form-select form-select-lg" id="capture-mode">
+                        <option value="replay">📁 Replay (PCAP)</option>
+                        <option value="live">⚡ Live (Temps réel)</option>
+                    </select>
+                </div>
+
+                <!-- Network Interface (Live Mode) -->
+                <div class="col-md-3" id="interface-group" style="display: none;">
+                    <label class="form-label">
+                        <i class="bi bi-wifi"></i> Interface réseau
+                    </label>
+                    <div class="input-group">
+                        <select class="form-select form-select-lg" id="interface">
+                            <option value="">Sélectionner...</option>
+                        </select>
+                        <button class="btn btn-outline-primary" type="button" id="btn-refresh-interfaces" title="Actualiser">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted" id="interface-info"></small>
+                </div>
+
+                <!-- PCAP File (Replay Mode) -->
+                <div class="col-md-4" id="pcap-path-group">
+                    <label class="form-label">
+                        <i class="bi bi-file-earmark-binary"></i> Fichier PCAP
+                    </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control form-control-lg" id="pcap-path" 
+                               placeholder="data/pcap_samples/sample_traffic.pcap"
+                               value="data/pcap_samples/sample_traffic.pcap">
+                        <button class="btn btn-outline-primary" type="button" id="btn-browse-pcap" title="Parcourir">
+                            <i class="bi bi-folder"></i>
+                        </button>
+                    </div>
+                    <!-- PCAP Upload Section -->
+                    <div class="mt-2">
+                        <input type="file" class="form-control form-control-sm" id="pcap-upload" 
+                               accept=".pcap,.pcapng,.cap" style="display: none;">
+                        <button class="btn btn-sm btn-outline-success w-100" type="button" id="btn-upload-pcap">
+                            <i class="bi bi-cloud-upload"></i> Upload PCAP
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="btn-group w-100" role="group">
+                        <button class="btn btn-success btn-lg" id="btn-start-ids">
+                            <i class="bi bi-play-fill"></i> Démarrer
+                        </button>
+                        <button class="btn btn-danger btn-lg" id="btn-stop-ids" disabled>
+                            <i class="bi bi-stop-fill"></i> Arrêter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Statistics Cards Row -->
+    <div class="row g-3 mb-4">
+        <!-- Total Packets -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card stat-primary fade-in">
+                <div class="stat-icon">
+                    <i class="bi bi-diagram-3"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">PAQUETS ANALYSÉS</div>
+                    <div class="stat-value" id="stat-packets">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-arrow-up text-success"></i>
+                        <span id="stat-packets-rate">0</span> paquets/min
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Alerts -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card stat-danger fade-in">
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">ALERTES TOTALES</div>
+                    <div class="stat-value" id="stat-alerts">0</div>
+                    <div class="stat-breakdown">
+                        <span class="badge bg-danger" id="stat-critical" title="Alertes critiques">0</span>
+                        <span class="badge bg-warning text-dark" id="stat-warning" title="Alertes d'avertissement">0</span>
+                        <span class="badge bg-info" id="stat-info" title="Alertes d'information">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signature Hits -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card stat-warning fade-in">
+                <div class="stat-icon">
+                    <i class="bi bi-shield-exclamation"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">SIGNATURES DÉTECTÉES</div>
+                    <div class="stat-value" id="stat-signatures">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-activity"></i>
+                        <span id="stat-signature-rate">0</span> /min
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anomaly Detections -->
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card stat-info fade-in">
+                <div class="stat-icon">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">ANOMALIES DÉTECTÉES</div>
+                    <div class="stat-value" id="stat-anomalies">0</div>
+                    <div class="stat-change">
+                        <i class="bi bi-cpu"></i>
+                        <span id="stat-ml-alerts">0</span> Alertes ML
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scan Duration Card -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="stat-card stat-primary fade-in">
+                <div class="stat-icon">
+                    <i class="bi bi-stopwatch"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-label">DURÉE DU SCAN</div>
+                    <div class="stat-value" id="scan-duration" style="font-size: 2rem; font-family: 'Fira Code', monospace;">
+                        00:00:00
+                    </div>
+                    <div class="stat-change">
+                        <i class="bi bi-clock-history"></i>
+                        <span id="scan-start-time">Non démarré</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="row g-4">
+        <!-- Left Column: Alerts & Logs -->
+        <div class="col-lg-6">
+            <!-- Recent Alerts -->
+            <div class="card fade-in mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bell-fill text-neon-danger"></i>
+                        <span class="text-neon-cyan">ALERTES RÉCENTES</span>
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary" id="btn-filter-alerts" title="Filtrer">
+                            <i class="bi bi-funnel"></i>
+                        </button>
+                        <span class="badge bg-danger" id="alerts-count-badge">0</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="alerts-container" class="alerts-list">
+                        <div class="text-center p-5" id="no-alerts-message">
+                            <i class="bi bi-shield-check text-muted" style="font-size: 4rem;"></i>
+                            <p class="text-muted mt-3">Aucune alerte pour le moment</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Logs -->
+            <div class="card fade-in">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-terminal-fill text-neon-cyan"></i>
+                        <span class="text-neon-cyan">LOGS EN TEMPS RÉEL</span>
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" id="btn-clear-logs" title="Effacer">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-toggle-logs" title="Pause/Play">
+                            <i class="bi bi-pause-fill" id="logs-toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="log-viewer" class="log-viewer">
+                        <div class="log-entry log-info">
+                            <span class="log-time">[00:00:00]</span>
+                            <span class="log-level">[INFO]</span>
+                            <span class="log-message">Système IDS initialisé. En attente de capture...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Packet Stream & Charts -->
+        <div class="col-lg-6">
+            <!-- Packet Stream -->
+            <div class="card fade-in mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity text-neon-cyan"></i>
+                        <span class="text-neon-cyan">FLUX DE PAQUETS</span>
+                    </h5>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge bg-info" id="packet-rate-badge">0 pkt/min</span>
+                        <button class="btn btn-sm btn-outline-secondary" id="btn-clear-packets" title="Effacer">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="packet-stream" class="packet-stream">
+                        <div class="packet-placeholder">
+                            <i class="bi bi-diagram-3 text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">Aucun paquet capturé</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row g-4">
+                <!-- Packet Rate Chart -->
+                <div class="col-12">
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-graph-up text-neon-cyan"></i>
+                                <span class="text-neon-cyan">TAUX DE PAQUETS</span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="packets-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Frequency Chart -->
+                <div class="col-12">
+                    <div class="card fade-in">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-bar-chart text-neon-danger"></i>
+                                <span class="text-neon-danger">FRÉQUENCE DES ALERTES</span>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="alerts-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Timeline -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card fade-in">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history text-neon-violet"></i>
+                        <span class="text-neon-violet">TIMELINE DES ALERTES</span>
+                    </h5>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="badge bg-info" id="timeline-count-badge">0</span>
+                        <small class="text-muted" id="timeline-status">
+                            <i class="bi bi-circle-fill text-success" style="font-size: 0.5rem;"></i> Temps réel
+                        </small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="alert-timeline" class="alert-timeline">
+                        <div class="timeline-placeholder text-center p-5">
+                            <i class="bi bi-clock-history text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">Timeline des alertes apparaîtra ici</p>
+                            <small class="text-muted">Les alertes seront affichées en temps réel</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Detail Modal -->
+<div class="modal fade" id="alertDetailModal" tabindex="-1" aria-labelledby="alertDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content hacker-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alertDetailModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-neon-danger"></i>
+                    <span>DÉTAILS DE L'ALERTE</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="alert-detail-content">
+                <!-- Alert details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" id="btn-export-alert">
+                    <i class="bi bi-download"></i> Exporter JSON
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Filter Modal -->
+<div class="modal fade" id="alertFilterModal" tabindex="-1" aria-labelledby="alertFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content hacker-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alertFilterModalLabel">
+                    <i class="bi bi-funnel-fill"></i>
+                    <span>FILTRER LES ALERTES</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Sévérité</label>
+                    <select class="form-select" id="filter-severity">
+                        <option value="">Toutes</option>
+                        <option value="CRITICAL">Critique</option>
+                        <option value="WARNING">Avertissement</option>
+                        <option value="INFO">Info</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Règle</label>
+                    <input type="text" class="form-control" id="filter-rule" placeholder="Ex: PORT_SCAN">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Source IP</label>
+                    <input type="text" class="form-control" id="filter-src" placeholder="Ex: 192.168.1.1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-reset-filters">Réinitialiser</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Appliquer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PCAP Browser Modal -->
+<div class="modal fade" id="pcapBrowserModal" tabindex="-1" aria-labelledby="pcapBrowserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content hacker-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pcapBrowserModalLabel">
+                    <i class="bi bi-folder-fill"></i>
+                    <span>SÉLECTIONNER UN FICHIER PCAP</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="pcap-file-list" class="pcap-file-list">
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/hacker_animations.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+core/__pycache__/
+cli/__pycache__/
+tests/__pycache__/
+web/__pycache__/
+data/logs/*.log*
+*.pyc

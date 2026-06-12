@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - IDS{% endblock %}
+
+{% block content %}
+<div class="row mb-4 fade-in">
+    <div class="col-12">
+        <h2 class="text-neon-cyan" style="font-family: 'Orbitron', sans-serif; font-weight: 700; letter-spacing: 2px;">
+            <i class="bi bi-envelope"></i> CONTACT
+        </h2>
+        <hr style="border-color: rgba(0, 245, 255, 0.3); margin-top: 1rem;">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-cyan" style="letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="bi bi-send"></i> ENVOYER UN MESSAGE
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="contact-form">
+                    <div class="mb-3">
+                        <label for="contact-name" class="form-label">Nom</label>
+                        <input type="text" class="form-control form-control-lg" id="contact-name" required 
+                               style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact-email" class="form-label">Email</label>
+                        <input type="email" class="form-control form-control-lg" id="contact-email" required 
+                               style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact-subject" class="form-label">Sujet</label>
+                        <select class="form-select form-select-lg" id="contact-subject" required 
+                                style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            <option value="">Sélectionner un sujet</option>
+                            <option value="bug">Signaler un bug</option>
+                            <option value="feature">Demande de fonctionnalité</option>
+                            <option value="question">Question</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact-message" class="form-label">Message</label>
+                        <textarea class="form-control" id="contact-message" rows="5" required 
+                                  style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary); font-family: 'Fira Code', monospace;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-send"></i> Envoyer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-cyan" style="letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="bi bi-info-circle"></i> INFORMATIONS
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6><i class="bi bi-shield-check text-neon-cyan"></i> Système IDS</h6>
+                <p class="text-muted">Système de Détection d'Intrusions Réseau</p>
+                
+                <hr style="border-color: rgba(0, 245, 255, 0.2);">
+                
+                <h6><i class="bi bi-envelope-at text-neon-cyan"></i> Support</h6>
+                <p class="text-muted">Pour toute question ou problème, utilisez le formulaire de contact.</p>
+                
+                <hr style="border-color: rgba(0, 245, 255, 0.2);">
+                
+                <h6><i class="bi bi-exclamation-triangle text-neon-warning"></i> Urgences</h6>
+                <p class="text-muted">Pour les alertes de sécurité critiques, contactez immédiatement votre administrateur système.</p>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mt-3">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-warning" style="letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="bi bi-lightbulb"></i> AIDE
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Consultez la documentation</li>
+                    <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Vérifiez les logs système</li>
+                    <li class="mb-0"><i class="bi bi-check-circle text-success"></i> Contactez l'administrateur</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/contact.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Historique - IDS{% endblock %}
+
+{% block content %}
+<div class="row mb-4 fade-in">
+    <div class="col-12">
+        <h2 class="text-neon-cyan" style="font-family: 'Orbitron', sans-serif; font-weight: 700; letter-spacing: 2px;">
+            <i class="bi bi-clock-history"></i> HISTORIQUE DES DÉTECTIONS
+        </h2>
+        <hr style="border-color: rgba(0, 245, 255, 0.3); margin-top: 1rem;">
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-sm filter-section">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-cyan" style="font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="bi bi-funnel"></i> FILTRES
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Type d'attaque</label>
+                        <select class="form-select form-select-lg" id="filter-rule" 
+                                style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            <option value="">Tous</option>
+                            <option value="PORT_SCAN">Port Scan</option>
+                            <option value="SYN_FLOOD">SYN Flood</option>
+                            <option value="PING_SWEEP">Ping Sweep</option>
+                            <option value="SUSPICIOUS_PORT">Port Suspect</option>
+                            <option value="ANOMALY_HIGH_RATE">Anomalie - Taux élevé</option>
+                            <option value="ANOMALY_LARGE_PAYLOAD">Anomalie - Payload large</option>
+                            <option value="ANOMALY_ML">Anomalie ML</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Gravité</label>
+                        <select class="form-select form-select-lg" id="filter-severity" 
+                                style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                            <option value="">Toutes</option>
+                            <option value="CRITICAL">Critique</option>
+                            <option value="WARNING">Avertissement</option>
+                            <option value="INFO">Information</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Date de début</label>
+                        <input type="datetime-local" class="form-control form-control-lg" id="filter-date-from" 
+                               style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Date de fin</label>
+                        <input type="datetime-local" class="form-control form-control-lg" id="filter-date-to" 
+                               style="background: rgba(15, 15, 26, 0.8); border-color: rgba(0, 245, 255, 0.3); color: var(--text-primary);">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-lg" id="btn-apply-filters">
+                            <i class="bi bi-search"></i> Appliquer les filtres
+                        </button>
+                        <button class="btn btn-secondary btn-lg ms-2" id="btn-reset-filters">
+                            <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0 text-neon-cyan" style="letter-spacing: 1px; text-transform: uppercase;">
+                    <i class="bi bi-list-ul"></i> LISTE DES ALERTES
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="alerts-table" style="color: var(--text-primary);">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(0, 245, 255, 0.3);">
+                                <th style="color: var(--neon-cyan);">Date/Heure</th>
+                                <th style="color: var(--neon-cyan);">Type</th>
+                                <th style="color: var(--neon-cyan);">Gravité</th>
+                                <th style="color: var(--neon-cyan);">Source</th>
+                                <th style="color: var(--neon-cyan);">Destination</th>
+                                <th style="color: var(--neon-cyan);">Description</th>
+                                <th style="color: var(--neon-cyan);">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alerts-tbody">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="bi bi-hourglass-split" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">Chargement...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-outline-primary btn-lg" id="btn-load-more" style="display: none;">
+                        <i class="bi bi-arrow-down-circle"></i> Charger plus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Detail Modal -->
+<div class="modal fade" id="alertModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background: var(--bg-glass); border: 1px solid rgba(0, 245, 255, 0.3);">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(0, 245, 255, 0.3);">
+                <h5 class="modal-title text-neon-cyan">Détails de l'alerte</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="alert-detail-content" style="color: var(--text-primary);">
+                <!-- Content loaded dynamically -->
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid rgba(0, 245, 255, 0.3);">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

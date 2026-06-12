@@ -1,0 +1,42 @@
+capture:
+  mode: replay  # live or replay
+  interface: eth0
+  pcap_path: data/pcap_samples/sample_traffic.pcap
+  bpf_filter: ""
+  throttle_packets_per_sec: 0  # 0 = no throttle
+
+signatures:
+  portscan:
+    enabled: true
+    ports_threshold: 20
+    window_seconds: 10
+  syn_flood:
+    enabled: true
+    syn_threshold: 200
+    window_seconds: 10
+  ping_sweep:
+    enabled: true
+    hosts_threshold: 50
+    window_seconds: 30
+  suspicious_ports:
+    enabled: true
+    ports: [21, 22, 23, 3389, 4444, 6667]
+
+anomaly:
+  packet_rate_threshold: 3000  # per src per minute
+  payload_size_threshold_bytes: 10000
+  use_ml: false
+  model_path: data/datasets/isof_model.joblib
+  baseline_path: data/datasets/baseline_train.csv
+
+logging:
+  traffic_log: data/logs/traffic.log
+  alerts_log: data/logs/alerts.log
+  max_bytes: 10485760  # 10MB
+  backup_count: 7
+  level: INFO
+
+security:
+  restrict_log_permissions: true
+
+

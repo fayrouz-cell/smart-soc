@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}IDS - Application{% endblock %}
+
+{% block content %}
+<div class="spa-shell">
+    <div class="spa-shell-header mb-3">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-command text-neon-cyan" style="font-size: 2rem;"></i>
+            <div>
+                <h2 class="text-neon-cyan m-0" style="font-family: 'Orbitron', sans-serif;">Centre de Contrôle IDS</h2>
+                <p class="text-muted m-0">Bascule instantanément entre toutes les vues sans perdre leur état.</p>
+            </div>
+        </div>
+    </div>
+    <div class="spa-frame-container">
+        <iframe 
+            id="frame-dashboard" 
+            class="spa-frame active" 
+            title="Tableau de bord"
+            data-view="dashboard"
+            data-src="{{ url_for('dashboard', embedded=1) }}"
+            loading="lazy">
+        </iframe>
+        <iframe 
+            id="frame-history" 
+            class="spa-frame" 
+            title="Historique"
+            data-view="history"
+            data-src="{{ url_for('history', embedded=1) }}"
+            loading="lazy">
+        </iframe>
+        <iframe 
+            id="frame-configuration" 
+            class="spa-frame" 
+            title="Configuration des alertes"
+            data-view="configuration"
+            data-src="{{ url_for('alerts', embedded=1) }}"
+            loading="lazy">
+        </iframe>
+        <iframe 
+            id="frame-contact" 
+            class="spa-frame" 
+            title="Contact"
+            data-view="contact"
+            data-src="{{ url_for('contact', embedded=1) }}"
+            loading="lazy">
+        </iframe>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    window.__SPA_SHELL__ = true;
+</script>
+<script src="{{ url_for('static', filename='js/spa_shell.js') }}"></script>
+{% endblock %}
+

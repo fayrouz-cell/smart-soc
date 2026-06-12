@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IDS - Système de Détection d'Intrusions{% endblock %}</title>
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Custom Dark Hacker Theme -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark_hacker.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+{% set embedded = request.args.get('embedded') %}
+<body class="{{ 'embedded-body' if embedded else '' }}">
+    <!-- Navigation Bar -->
+    {% if not embedded %}
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('app_shell') if session.user else url_for('index') }}">
+                <i class="bi bi-shield-check"></i> 
+                <span style="font-family: 'Orbitron', sans-serif; font-weight: 700;">IDS</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if session.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('app_shell') }}#dashboard" data-view="dashboard">
+                            <i class="bi bi-speedometer2"></i> Tableau de bord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('app_shell') }}#history" data-view="history">
+                            <i class="bi bi-clock-history"></i> Historique
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('app_shell') }}#configuration" data-view="configuration">
+                            <i class="bi bi-bell"></i> Configuration
+                        </a>
+                    </li>
+                    {% if session.role == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('app_shell') }}#contact" data-view="contact">
+                            <i class="bi bi-gear"></i> Contact
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if session.user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> 
+                            <span>{{ session.user }}</span>
+                            {% if session.role == 'admin' %}
+                            <span class="badge bg-danger ms-2">ADMIN</span>
+                            {% else %}
+                            <span class="badge bg-info ms-2">USER</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                <i class="bi bi-box-arrow-right"></i> Déconnexion
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">
+                            <i class="bi bi-box-arrow-in-right"></i> Connexion
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Main Content -->
+    <div class="{{ 'embedded-content' if embedded else 'container-fluid mt-5 pt-4' }}">
+        {% if not embedded %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            <i class="bi bi-{{ 'x-circle' if category == 'error' else 'check-circle' }}"></i> {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    {% if not embedded %}
+    <footer class="mt-5 py-4 text-center">
+        <div class="container">
+            <p class="mb-0 text-muted">
+                <span class="text-neon-cyan">&copy; 2025</span> 
+                <span class="text-neon-violet">IDS_PROJECT</span> 
+                <span class="text-muted">| Système de Détection d'Intrusions Réseau</span>
+            </p>
+        </div>
+    </footer>
+    {% endif %}
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
