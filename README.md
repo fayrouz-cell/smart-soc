@@ -41,7 +41,6 @@ Ce projet implémente un IDS (Intrusion Detection System) avec les fonctionnalit
 
 ![Architecture](architecture.png)
 
-*Remplace `architecture.png` par le chemin de ton image (ex: `docs/architecture.png`)*
 
 ## Modules principaux
 
