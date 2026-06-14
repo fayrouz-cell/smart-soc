@@ -389,6 +389,6 @@ Les contributions sont les bienvenues ! Veuillez :
 
 # 📚 Références
 
-- Scapy Documentation
-- Scikit-learn IsolationForest
-- BPF Filter Syntax
+- [Scapy Documentation](https://scapy.readthedocs.io/)
+- [Scikit-learn IsolationForest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html)
+- [BPF Filter Syntax](https://biot.com/capstats/bpf.html)
